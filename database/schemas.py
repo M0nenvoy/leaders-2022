@@ -46,6 +46,10 @@ class HouseAddress(HouseAddressBase):
         orm_mode = True
 
 
-class HouseApartments(BaseModel):
+class HouseApartmentsCreate(BaseModel):
     house_id: int
     apartments: int
+
+
+class HouseApartments(HouseApartmentsCreate):
+    id: int

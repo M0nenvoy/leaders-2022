@@ -6,21 +6,20 @@ import openpyxl
 from sqlalchemy.orm import Session
 
 from database import schemas, crud, models
+from database.session import SessionLocal
 
 from definitions import RESOURCE_DIR
 
 FILEPATH = RESOURCE_DIR + "/xlsx/houses.xlsx"
 
+
 def main():
     wb = openpyxl.load_workbook(FILEPATH);
     ws = wb.active
 
-    id = 0
-    #                                                 V Don't include the 0 row, since it contains headers for the data
-    for row in ws.iter_rows(values_only=True, min_col=3, min_row=2, max_row=140):
-        # ИД элемента в БД
-        current_id = ++id;
+    db = SessionLocal()
 
+    for row in ws.iter_rows(values_only=True, min_col=3, min_row=2):
         # Адрес дома
         address: str = row[0]
 
@@ -30,16 +29,25 @@ def main():
         moscow_part         = address.find(", Москва")
         address_optimized   = address[:moscow_part]
 
+        # Проверим, нет ли уже в бд дома с таким адресом. Если да, то повторное его введение приведет к ошибке
+        db_house_address = crud.get_house_address_by_address_str(db, address_optimized)
+        already_present = (db_house_address is not None)
+
         # Число квартир, как строка
         apartments = row[5]
-        if (apartments == "Не указано" or apartments == None):
+
+        if (not isinstance(apartments, int)):
             continue
-        
+
         # Число квартир, как целочисленное
         apartments_number = int(apartments)
 
-        print("{0}: {1}".format(address, apartments_number))
+        # Добавление к сообщению, если в бд уже был дом с таким адресом
+        ignored_message = " (Ignored)" if already_present else ""
+        print("{0}: {1}{2}".format(address, apartments_number, ignored_message))
 
+        if not already_present:
+            create_house(db, address_optimized, apartments_number)
 
 
 def create_house(db: Session, address: str, apartments_number: int):
@@ -52,14 +60,14 @@ def create_house(db: Session, address: str, apartments_number: int):
 
     # Сперва создадим `house_address`
     house_address: schemas.HouseAddressCreate = schemas.HouseAddressCreate(address=address)
-    crud.create_house_address(db, house_address)
+    house_address_created = crud.create_house_address(db, house_address)
 
     # Теперь мы можем узнать id house_address...
-    house_id = crud.get_house_id_by_address(db, house_address.address)
+    house_id = house_address_created.__dict__['id']
 
-    # ... И с помощью него создадим `house_apartments`
-    house_apartments: schemas.HouseApartments = schemas.HouseApartments(house_id=house_id, apartments=apartments_number)
-    crud.create_house_apartments(**house_apartments.dict())
+    # ... И с помощью него мы сможем создать house_apartments, которые ссылаются на house_address
+    house_apartments: schemas.HouseApartmentsCreate = schemas.HouseApartmentsCreate(house_id=house_id, apartments=apartments_number)
+    crud.create_house_apartments(db, house_apartments)
 
 
 if __name__ == "__main__":
