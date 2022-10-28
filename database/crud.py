@@ -40,3 +40,16 @@ def create_house_apartments(db: Session, house: schemas.HouseApartmentsCreate):
     db.refresh(db_item)
 
     return db_item
+
+
+def get_house_point_by_house_id(db: Session, house_id: int):
+    return db.query(models.HousePoint).filter(models.HousePoint.house_id==house_id).first()
+
+
+def create_house_point(db: Session, house: schemas.HousePointCreate):
+    db_item = models.HousePoint(**house.dict())
+    db.add(db_item)
+    db.commit()
+    db.refresh(db_item)
+
+    return db_item

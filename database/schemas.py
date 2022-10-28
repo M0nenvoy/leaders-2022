@@ -22,3 +22,19 @@ class HouseApartmentsCreate(BaseModel):
 
 class HouseApartments(HouseApartmentsCreate):
     id: int
+
+    class Config:
+        orm_mode = True
+
+
+class HousePointCreate(BaseModel):
+    house_id:   int
+    lon:        float
+    lad:        float
+
+
+class HousePoint(HousePointCreate):
+    id: int
+
+    class Config:
+        orm_mode = True

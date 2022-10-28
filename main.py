@@ -1,8 +1,10 @@
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
-from database import crud, models, schemas
-from database.session import SessionLocal, engine
+from database import crud, schemas
+from database.session import SessionLocal
+
+from GIS import schemas as GISschemas
 
 app = FastAPI()
 
@@ -13,6 +15,7 @@ def get_db():
         yield db
     finally:
         db.close()
+
 
 @app.post("/create-house/", response_model=schemas.HouseAddress)
 def create_house (house: schemas.HouseAddressCreate, db: Session = Depends(get_db)):
@@ -50,6 +53,30 @@ def get_house_apartments(id: int, db: Session = Depends(get_db)):
 
 @app.get("/get-house/", response_model=int)
 def get_house (address: str = "Not specified", db: Session = Depends(get_db)):
-    import pdb; pdb.set_trace()
     house = crud.get_house_id_by_address(db, address)
     return house
+
+
+@app.get("/get-house-point/{house_id}", response_model=GISschemas.Point)
+def get_house_point (house_id: int, db: Session = Depends(get_db)):
+    house_point = crud.get_house_point_by_house_id(db, house_id)
+    if house_point is None:
+        raise HTTPException(status_code=404, detail="House point with such house_id does not exist")
+
+    return house_point.__dict__
+
+
+@app.post("/create-house-point", response_model=schemas.HousePoint)
+def create_house_point (house_point: schemas.HousePointCreate, db: Session = Depends(get_db)):
+    # Проверим, существует ли точка дома с таким же house_id
+    db_point = crud.get_house_point_by_house_id(db, house_point.house_id)
+    if db_point:
+        raise HTTPException(status_code=400, detail="House point with such house_id is already present")
+
+    # Убедимся, что существует адрес с id=house_id
+    db_address = crud.get_house_address_by_id(db, house_point.house_id)
+    if db_address is None:
+        raise HTTPException(status_code=404, detail="House address with such id doesn't exist")
+
+    # Если точки не существует, то мы можем смело создавать новую точку
+    return crud.create_house_point(db, house_point)
