@@ -8,6 +8,8 @@ from sqlalchemy.orm import Session
 from database import schemas, crud, models
 from database.session import SessionLocal
 
+from GIS import query, schemas as GISschemas
+
 from definitions import RESOURCE_DIR
 
 FILEPATH = RESOURCE_DIR + "/xlsx/houses.xlsx"
@@ -44,13 +46,19 @@ def main():
 
         # Добавление к сообщению, если в бд уже был дом с таким адресом
         ignored_message = " (Ignored)" if already_present else ""
-        print("{0}: {1}{2}".format(address, apartments_number, ignored_message))
+        print("{0}{1}".format(address, ignored_message))
 
         if not already_present:
-            create_house(db, address_optimized, apartments_number)
+            # Определим геолокацию дома
+            point = query.get_position_by_address_string(address)
+            if point is None:
+                print("Failed to determine the location of the building with address: {}".format(address))
+                continue
+
+            create_house(db, address_optimized, apartments_number, point)
 
 
-def create_house(db: Session, address: str, apartments_number: int):
+def create_house(db: Session, address: str, apartments_number: int, point: GISschemas.Point):
     """
     Добавить новый дом в базу данных.
     Это функция добавляет по ряду в две таблицы: Таблицу с адресами домов и
@@ -68,6 +76,15 @@ def create_house(db: Session, address: str, apartments_number: int):
     # ... И с помощью него мы сможем создать house_apartments, которые ссылаются на house_address
     house_apartments: schemas.HouseApartmentsCreate = schemas.HouseApartmentsCreate(house_id=house_id, apartments=apartments_number)
     crud.create_house_apartments(db, house_apartments)
+
+    # ... И точку расположения
+    crud.create_house_point(db,
+        schemas.HousePointCreate(
+            house_id=house_id,
+            lon=point.lon,
+            lad=point.lad
+        )
+    )
 
 
 if __name__ == "__main__":
