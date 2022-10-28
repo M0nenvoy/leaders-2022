@@ -1,8 +1,8 @@
 from fastapi import Depends, FastAPI, HTTPException
 from sqlalchemy.orm import Session
 
-from database import crud, models, schemas
-from database.session import SessionLocal, engine
+from database import crud, schemas
+from database.session import SessionLocal
 
 app = FastAPI()
 
@@ -13,6 +13,8 @@ def get_db():
         yield db
     finally:
         db.close()
+
+
 
 @app.post("/create-house/", response_model=schemas.HouseAddress)
 def create_house (house: schemas.HouseAddressCreate, db: Session = Depends(get_db)):
