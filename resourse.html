@@ -5,38 +5,47 @@
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <title>2GIS Map API</title>
         <meta name="description" content="Several markers example" />
-        <style>
-            html,
-            body,
-            #container {
-                margin: 0;
-                width: 100%;
-                height: 100%;
-                overflow: hidden;
-            }
-        </style>
+        <link href="map2.css" rel="stylesheet"/>
     </head>
     <body>
-        <div id="container"></div>
-        <script src="https://mapgl.2gis.com/api/js/v1"></script>
-        <script>
-            const map = new mapgl.Map('container', {
-                center: [55.31878, 25.23584],
-                zoom: 13,
-                key: '9f61ffc6-57ce-44b5-a8f1-d9ce0cc93d83',
-            });
-            const coords = [
-                [55.27414804174869, 25.257576991034284],
-                [55.289254243403306, 25.211614202468652],
-                [55.34418588368302, 25.215341562259866],
-                [55.35036569359612, 25.26068195798851],
-                [55.32976632814914, 25.238324424362062],
-            ];
-            coords.forEach((coord) => {
-                const marker = new mapgl.Marker(map, {
-                    coordinates: coord,
+        <div id="container">
+            <h1>A Heading</h1>
+            <h4>some info about the map</h4>
+            <script src="https://mapgl.2gis.com/api/js/v1"></script>
+            <script>
+                const map = new mapgl.Map('container', {
+                    center: [55.31878, 25.23584],
+                    zoom: 13,
+                    key: '9f61ffc6-57ce-44b5-a8f1-d9ce0cc93d83',
                 });
-            });
-        </script>
+                const coords = [
+                    [55.27414804174869, 25.257576991034284],
+                    [55.289254243403306, 25.211614202468652],
+                    [55.34418588368302, 25.215341562259866],
+                    [55.35036569359612, 25.26068195798851],
+                    [55.32976632814914, 25.238324424362062],
+                ];
+                coords.forEach((coord) => {
+                    const marker = new mapgl.Marker(map, {
+                        coordinates: coord,
+                    });
+                });
+            </script>
+            <div class="addinfo">
+                <table cellspacing="30">
+                    <tr>
+                        <td>
+                            text
+                        </td>
+                        <td>
+                            text
+                        </td>
+                        <td>
+                            text
+                        </td>
+                    </tr>
+                </table>
+            </div>
+        </div>
     </body>
 </html>
