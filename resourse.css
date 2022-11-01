@@ -1,3 +1,4 @@
+
 body{
     background-color: #D8D9CF;
     color:rgb(56, 49, 49);
@@ -12,3 +13,54 @@ body{
     margin: auto;
     justify-content: center;
 }
+
+.filters{
+    justify-content: right;
+}
+
+.fil1 {
+    width: 100px;
+    height: 50px;
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #424242;
+    background-color:#029ce962;
+    animation: kartinka 1s linear infinite alternate-reverse;
+}
+
+.fil2 {
+    width: 200px;
+    height: 50px;
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    text-align: center;
+    color: #424242;
+    background-color:#029ce962;
+    animation: kartinka 1s linear infinite alternate-reverse;
+}
+
+.fil3 {
+    width: 200px;
+    height: 50px;
+    border-radius: 30px;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    text-align: center;
+    color: #424242;
+    background-color:#029ce962;
+    animation: kartinka 1s linear infinite alternate-reverse;
+}
+/*@keyframes kartinka{
+    0%{
+        box-shadow: 0px 0px 3px rgb(0, 0, 0);
+    }
+    100%{
+        box-shadow: 0px 0px 5px 3px rgba(3, 27, 107, 0.568);
+    }
+}
+
