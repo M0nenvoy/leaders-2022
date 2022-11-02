@@ -10,23 +10,21 @@
     <body>
         <div id="container">
             <h1>Рекомендательный сервис для определения оптимальных мест размещения постаматов в рамках проекта "Московский постамат".</h1>
-            <h4>Параметры отображения:</h4>
-            <div class="filters">
-                <table cellspacing="30">
-                    <tr>
-                        <td>
-                            <div class="fil1">Радиус</div>
-                        </td>
-                        <td>
-                            <div class="fil2">Административный округ</div>
-                        </td>
-                        <td>
-                            <div class="fil3">Тип размещения</div>
-                        </td>
-                    </tr>
-                </table>
+            
+            <div class="dropdown">
+                <div>Параметры отображения:</div>
+                    <div style="margin-bottom:10px"></div>
+                <div id="dropdown" class="menu">
+                    <div class="fil1">Радиус</div>
+                    <div class="fil2">Административный округ</div>
+                    <div class="fil3">Тип размещения</div>
+                </div>
             </div>
-            <div class="map">
+
+            <div style="margin-bottom:10px"></div>
+
+        
+            <div id="map">
                             <script src="https://mapgl.2gis.com/api/js/v1"></script>
                             <script>
                                 const map = new mapgl.Map('container', {
@@ -49,7 +47,10 @@
                                 });
                             </script>
                             </div>
-                            <div style="margin-bottom:200px"></div>S
+                
         </div>
+        <div style="margin-bottom:600px"></div>
     </body>
 </html>
+
+
